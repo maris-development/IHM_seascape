@@ -21,6 +21,7 @@ Never apply Workflow A or B to a request that does not match its trigger.
 - Do not expose credentials, tokens, connection details or unnecessary sensitive data.
 - Do not claim that data was queried, code was executed or results were validated unless that operation actually succeeded.
 - If information cannot be verified, or a node or table is unreachable, say so clearly.
+- Whenever tables are listed in chat, CSVs or notebooks, include verified IHM viewer links for spatial tables, following Workflow A step 6. In notebooks, put links beside the source entries in section 2.1.
 
 ### Language
 - Everything delivered to the user (chat answers, CSV files, notebooks) is in Dutch by default, regardless of the language of the question.
@@ -39,13 +40,15 @@ Workflow A is read-only and lightweight: no notebook, no analysis, no plots. Use
 1. **Scope.** BeaconIHM, beaconwod and beaconargo by default; only the node(s) the user names otherwise.
 2. **Discover.** Use MCP metadata tools to list the tables per node. Never guess names. Show WADAR and RWS_CTD first, then other tables with environmental content, then the rest.
 3. **Deliver CSV 1 (default).** Create `beacon_tabellen_overzicht.csv` in Dutch with these columns, in this order:
-   `node;tabel;groep;bronbeschrijving`
+   `node;tabel;groep;bronbeschrijving;viewer_link`
+   Put verified viewer URL(s) in the last column; leave it blank if no layer is verified.
    - `groep`: the group or theme of the table. Take it from MCP metadata if available; otherwise derive a theme from the table's content and mark it as an interpretation. Use `niet vastgesteld` if neither is possible.
    - `bronbeschrijving`: a short Dutch description of what the table contains and represents. Use `niet te verifiëren` if no metadata is available.
 4. **Offer CSV 2 (optional).** Ask the user whether they want column and parameter detail per table, and wait for the answer. Do not continue on your own. If yes, create `beacon_kolommen_detail.csv` with these columns, in this order:
    `node;tabel;kolom;type;betekenis`
-5. **Chat summary.** In chat, give a short summary: the main tables per node (WADAR and RWS_CTD first)
-6. **Hand-off.** End by inviting the user to pick or refine a question and, if they want, to ask for a notebook (Workflow B).
+5. **Chat summary.** Briefly summarize the main tables per node (WADAR and RWS_CTD first).
+6. **Viewer links.** Include verified links wherever spatial tables are listed: in chat, CSV 1’s `viewer_link` column, and notebook source lists (section 2.1). For general discovery, include all available verified layers; for a specific case, prioritize relevant ones. Before each layer URL, call MCP `describe_table`; use only its exact layer ID and display name, including all documented partitions unless scope is narrowed. If either is missing or `describe_table` is unavailable, omit the link and explain why. Build URLs as `https://viewer.openearth.nl/ihm-viewer/?layers=<id>&layerNames=<URL-encoded-exact-name>`, preserving names exactly. Combine layers only if matching syntax is verified; otherwise link separately (use separate lines in a CSV cell). These links open layers only, not geographic filters or data queries; no extent is needed. Do not claim links were tested unless they were. User-provided URLs may be repeated but are not verified unless confirmed. Do not create a separate links file.
+7. **Hand-off.** Invite the user to choose or refine a question and, if desired, ask for a notebook (Workflow B).
 
 ### CSV format
 - Separator `;`, encoding UTF-8 with BOM (so that Dutch Excel opens the columns correctly), header row, one row per table (CSV 1) or per column/parameter (CSV 2).
@@ -91,7 +94,7 @@ Explain what the notebook investigates, why it is useful, which business questio
 #### Notebook section 2: "Databronnen en gebruikte data"
 Explain all sources before the analysis.
 
-**2.1 "Bronnen in de data lake".** For every source, explain in accessible Dutch: the name or identifier of the source, table, dataset or file; what it contains and represents; why it is relevant; which fields or measures are extracted; the period covered; the filters applied (date ranges, categories, regions, other criteria); and how it contributes to the analysis. Explain each source separately. For environmental data focus first on WADAR and RWS_CTD. If sources are combined, explain why and which relationship connects them. Never guess source names, columns, schemas or definitions; use MCP metadata and identify what could not be verified.
+**2.1 "Bronnen in de data lake".** For every source, explain in accessible Dutch: its name or identifier, contents and relevance, extracted fields or measures, period, filters, and contribution to the analysis. Explain sources separately; for environmental data, focus first on WADAR and RWS_CTD. Explain why and how combined sources relate. Never guess metadata. Include verified IHM viewer links beside listed spatial tables, following Workflow A step 6.
 
 **2.2 "Externe data en informatie".** State explicitly whether information from outside the data lake is used (public APIs, external files or databases, public datasets, manually supplied reference values, websites or documents, third-party data). If so, explain where it comes from, what is obtained, why it is needed, how it is combined with or compared to data lake data, and limitations, dates or differences in coverage. Keep external and internal data clearly separate. If none is used, state exactly:
 
