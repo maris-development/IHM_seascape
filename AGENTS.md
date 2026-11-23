@@ -32,6 +32,11 @@ Do not repeat questions the user has already answered explicitly. The candidate 
 - Do not claim that data was queried, code was executed or results were validated unless that operation actually succeeded.
 - If information cannot be verified, or a node or table is unreachable, say so clearly.
 
+### IHM viewer links
+Whenever spatial tables are listed in chat, CSVs or notebooks, include verified IHM viewer links. In notebooks, put links beside the source entries in section 2.1. For general data discovery, include all available verified layers; for a specific question, prioritize the relevant layers.
+
+Before constructing each layer URL, call MCP `describe_table`. Use only the exact layer ID and display name it returns, including all documented partitions unless the scope is narrowed. If either the ID or display name is missing, or `describe_table` is unavailable, omit the link and explain why. Build URLs as `https://viewer.openearth.nl/ihm-viewer/?layers=<id>&layerNames=<URL-encoded-exact-name>`, preserving the display name exactly. Combine layers only if the matching syntax is verified; otherwise list links separately (use separate lines in a CSV cell). These links open layers only, not geographic filters or data queries; no extent is needed. Do not claim links were tested unless they were. User-provided URLs may be repeated but are not verified unless confirmed. Do not create a separate links file.
+
 ### Language
 - Everything delivered to the user (chat answers, CSV files, notebooks) is in Dutch by default, regardless of the language of the question.
 - Table, column, parameter, tool and API names stay unchanged. Explain their meaning in Dutch.
